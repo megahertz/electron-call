@@ -8,6 +8,13 @@ class IpcFacade {
   constructor({ rpcClient, rpcServer }) {
     this.rpcClient = rpcClient;
     this.rpcServer = rpcServer;
+
+    this.call = this.call.bind(this);
+    this.provide = this.provide.bind(this);
+    this.provideFunction = this.provideFunction.bind(this);
+    this.use = this.use.bind(this);
+    this.useClass = this.useClass.bind(this);
+    this.useFunction = this.useFunction.bind(this);
   }
 
   async call(functionId, ...args) {
@@ -32,6 +39,14 @@ class IpcFacade {
         get: (target, name) => this.useFunction(`${apiName}.${name}`),
       }
     );
+  }
+
+  useClass(apiName) {
+    const use = this.use;
+
+    return function ProxyConstructor() {
+      return use(apiName);
+    };
   }
 
   useFunction(functionName) {

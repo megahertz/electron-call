@@ -1,3 +1,5 @@
+// noinspection JSUnusedLocalSymbols
+
 import call from '../index';
 
 class MainApi {
@@ -6,8 +8,20 @@ class MainApi {
   }
 }
 
-call.provide('main', MainApi);
+function testProvide() {
+  call.provide('MainApi', MainApi);
+}
+
+async function testUse() {
+  const mainApi = call.use<MainApi>('MainApi')
+  const result: string = await mainApi.getAppName()
+}
+
+async function testUseClass() {
+  class MainApiProxy extends call.useClass<MainApi>('MainApi') {}
+  const mainApi = new MainApiProxy();
+  const result: string = await mainApi.getAppName();
+}
 
 
-const mainApi = call.use<MainApi>('main')
-mainApi.getAppName()
+

@@ -3,6 +3,7 @@ declare namespace ElectronCall {
     provide(apiName: string, apiInstance: object);
     provideFunction(functionName: string, fn: Func);
     use<T = any>(apiName: string): ApiProxy<T>;
+    useClass<T = any>(apiName: string): { new(): ApiProxy<T> };
     useFunction<T extends Func = Func>(apiName: string): PromisifyFunction<T>;
   }
 
