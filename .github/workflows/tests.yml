@@ -16,4 +16,4 @@ jobs:
           node-version: '12.x'
 
       - run: npm install
-      - run: npm run test:full
+      - run: xvfb-run --auto-servernum npm run test:full
