@@ -4,8 +4,8 @@
 [![Dependencies status](https://img.shields.io/david/megahertz/electron-call)](https://david-dm.org/megahertz/electron-call)
 
 The easiest main-renderer IPC communication. Now calling a method/function in a
-remote process looks the sames as calling a local. Supports both main - renderer
-and renderer - main calls. Renderer - renderer is on the roadmap.
+remote process looks the sames as calling a local. Supports both main → renderer
+and renderer → main calls. Renderer → renderer is on the roadmap.
 
 Warning: API could be changes frequently until v0.1.0 release.
 
