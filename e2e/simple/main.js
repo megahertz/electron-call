@@ -21,7 +21,7 @@ function main() {
         }
       });
 
-      return 'result from main';
+      return Promise.resolve('result from main');
     },
 
     log(text) {
