@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Simple test project</title>
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';">
+</head>
+<body>
+
+<script>
+  const call = require('../..');
+
+  call.provide('renderer', {
+    async testInRenderer(arg1) {
+      mainApi.log(` - testInRenderer() is called with argument "${arg1}"`);
+      return 'result from renderer';
+    }
+  })
+
+  const mainApi = call.use('main');
+
+  callMain().catch(console.warn)
+
+  async function callMain() {
+    const result = await mainApi.testInMain('from renderer')
+    await mainApi.log(` - testInMain() returned value "${result}"`);
+  }
+</script>
+
+</body>
+</html>

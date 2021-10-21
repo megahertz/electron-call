@@ -3,11 +3,18 @@
 [![npm version](https://img.shields.io/npm/v/electron-call?color=brightgreen)](https://www.npmjs.com/package/electron-call)
 [![Dependencies status](https://img.shields.io/david/megahertz/electron-call)](https://david-dm.org/megahertz/electron-call)
 
-## Description
+The easiest main-renderer IPC communication. Now calling a method/function in a
+remote process looks the sames as calling a local. Supports both main - renderer
+and renderer - main calls. Renderer - renderer is on the roadmap.
 
-The easiest main-renderer IPC communication
+Warning: API could be changes frequently until v0.1.0 release.
 
-The project is at an early stage.
+### Key features
+
+ - Very simple API
+ - Typescript friendly
+ - Lightweight and fast
+ - No dependencies
 
 ```typescript
 // MainApi.ts
@@ -20,7 +27,7 @@ class MainApi {
   }
 }
 
-call.provide(MainApi);
+call.provide('main', MainApi);
 ```
 
 ```typescript
@@ -28,21 +35,8 @@ call.provide(MainApi);
 import call from 'electron-call';
 import type { MainApi } from '../main/MainApi';
 
-const mainApi = call.use<MainApi>()
+const mainApi = call.use<MainApi>('main')
 console.log(await mainApi.getAppName());
-```
-
-```typescript
-// RendererApi.ts
-import call from 'electron-call';
-
-class RendererApi {
-  async renderText(text: string) {
-    document.getElementById('text').innerText = text;
-  }
-}
-
-call.provide(RendererApi);
 ```
 
 ## Installation

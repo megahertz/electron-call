@@ -1,12 +1,13 @@
 {
   "name": "electron-call",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1",
   "description": "The easiest main-renderer IPC communication",
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint 'src/**/*.js'",
     "test": "humile src",
-    "test:full": "npm run test && npm run lint && tsc --noEmit --skipLibCheck",
+    "test:e2e": "humile e2e -R list",
+    "test:full": "npm test && npm run lint && tsc --noEmit --skipLibCheck && npm run test:e2e",
     "postversion": "git push && git push --tags",
     "prepack": "npm run test:full",
     "preversion": "npm run test:full"
@@ -27,11 +28,12 @@
   "bugs": "https://github.com/megahertz/electron-call/issues",
   "homepage": "https://github.com/megahertz/electron-call#readme",
   "engines": {
-    "node": ">=12.0"
+    "node": ">=14.0"
   },
   "typings": "src/index.d.ts",
   "devDependencies": {
     "@types/node": "^16.10.2",
+    "electron": "^15.1.2",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.24.2",

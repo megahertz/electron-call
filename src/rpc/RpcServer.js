@@ -3,8 +3,13 @@
 const { serializeError } = require('./error');
 
 class RpcServer {
-  constructor(ipcBus) {
+  /**
+   * @param {IpcBus} ipcBus
+   * @param {Logger} logger
+   */
+  constructor({ ipcBus, logger }) {
     this.ipcBus = ipcBus;
+    this.logger = logger;
   }
 
   provide(functionName, handler) {
@@ -13,8 +18,7 @@ class RpcServer {
     this.ipcBus.registerMessageHandler(requestId, (message) => {
       const callId = message.callId;
       if (!callId) {
-        // eslint-disable-next-line no-console
-        console.warn(`${requestId} called, but callId isn't provided`);
+        this.logger.warn(`${requestId} called, but callId isn't provided`);
         return;
       }
 
@@ -33,8 +37,8 @@ class RpcServer {
       const result = handler.apply(null, handlerArguments);
       if (result && result.then && result.catch) {
         result
-          .then(res => this.sendResponse(responseId, res))
-          .catch(e => this.sendErrorResponse(responseId, e));
+          .then((res) => this.sendResponse(responseId, res))
+          .catch((e) => this.sendErrorResponse(responseId, e));
       } else {
         this.sendResponse(responseId, result);
       }

@@ -6,8 +6,8 @@ class MainApi {
   }
 }
 
-call.provide(MainApi);
+call.provide('main', MainApi);
 
 
-const mainApi = call.use<MainApi>()
+const mainApi = call.use<MainApi>('main')
 mainApi.getAppName()

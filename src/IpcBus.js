@@ -1,10 +1,11 @@
 'use strict';
 
-const IpcTransport = require('./transports/IpcTransport');
-
 class IpcBus {
-  constructor(transport = new IpcTransport()) {
-    this.transport = null;
+  /**
+   * @param {IpcTransport} transport
+   */
+  constructor({ transport }) {
+    this.transport = transport;
     this.handlers = {};
 
     this.onMessage = this.onMessage.bind(this);
@@ -35,7 +36,6 @@ class IpcBus {
     }
 
     const handler = this.handlers[message.id];
-
     if (handler) {
       handler(message);
     }

@@ -5,6 +5,7 @@ module.exports = {
   env: {
     es6: true,
     node: true,
+    jasmine: true,
   },
 
   parserOptions: {
@@ -12,11 +13,10 @@ module.exports = {
   },
 
   settings: {
-    'import/core-modules': ['humile', 'debug'],
+    'import/core-modules': ['humile', 'electron'],
   },
 
   rules: {
-    'arrow-parens': ['error', 'as-needed', { requireForBlockBody: true }],
     'class-methods-use-this': 'off',
     'comma-dangle': ['error', {
       arrays: 'always-multiline',
@@ -25,6 +25,9 @@ module.exports = {
       exports: 'always-multiline',
       functions: 'never',
     }],
+    // 'import/no-extraneous-dependencies': ['error', {
+    //   devDependencies: ['e2e/**/*.js', '**/*.spec.js'],
+    // }],
     'max-len': ['error', { code: 80 }],
     'no-continue': 'off',
     'no-multi-spaces': ['error', {

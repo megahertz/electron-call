@@ -3,7 +3,10 @@
 const { deserializeError } = require('./error');
 
 class RpcClient {
-  constructor(ipcBus) {
+  /**
+   * @param {IpcBus} ipcBus
+   */
+  constructor({ ipcBus }) {
     this.ipcBus = ipcBus;
     this.callCounter = 1;
   }

@@ -1,23 +1,26 @@
 declare namespace ElectronCall {
   interface IpcFacade {
-    provide(instance: object);
-    use<T = any>(name?: string): ApiProxy<T>;
+    provide(apiName: string, apiInstance: object);
+    provideFunction(functionName: string, fn: Func);
+    use<T = any>(apiName: string): ApiProxy<T>;
+    useFunction<T extends Func = Func>(apiName: string): PromisifyFunction<T>;
   }
 
   export type ApiProxy<T> = {
-    [P in keyof T]: T[P] extends (...a: any) => any
-      ? PromisifyFunction<T[P]>
-      : never;
+    [P in keyof T]: T[P] extends Func ? PromisifyFunction<T[P]> : never;
   };
 
   type WrapToPromise<T> = T extends Promise<any> ? T : Promise<T>;
-  type PromisifyFunction<T extends (...a: any) => any> = (
+  type PromisifyFunction<T extends Func> = (
     ...a: Parameters<T>
   ) => WrapToPromise<ReturnType<T>>;
+
+  type Func = (...args: any) => any;
 }
 
 // Merge namespace with interface
 declare const ElectronCall: ElectronCall.IpcFacade & {
+  create: () => ElectronCall.IpcFacade;
   default: ElectronCall.IpcFacade;
 }
 export = ElectronCall;

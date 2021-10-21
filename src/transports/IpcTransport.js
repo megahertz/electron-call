@@ -3,7 +3,7 @@
 let electron;
 
 try {
-  // eslint-disable-next-line global-require,import/no-unresolved
+  // eslint-disable-next-line global-require
   electron = require('electron');
 } catch (e) {
   electron = null;
@@ -12,9 +12,15 @@ try {
 const IPC_CHANNEL = '__ELECTRON_CALL__';
 
 class IpcTransport {
+  /**
+   * @param {Logger} logger
+   */
+  constructor({ logger }) {
+    this.logger = logger;
+  }
+
   send(message) {
-    // eslint-disable-next-line no-console
-    console.log('SEND', message);
+    this.logger.debug('SEND', message);
 
     if (process.type === 'browser') {
       sendIpcToRenderer(IPC_CHANNEL, message);
@@ -27,8 +33,7 @@ class IpcTransport {
     const ipc = getIpc();
     if (ipc) {
       ipc.on(IPC_CHANNEL, (event, payload) => {
-        // eslint-disable-next-line no-console
-        console.log('RECEIVE', payload);
+        this.logger.debug('RECEIVE', payload);
         callback(payload);
       });
     }

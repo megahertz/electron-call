@@ -1,7 +1,11 @@
 'use strict';
 
 class IpcFacade {
-  constructor(rpcClient, rpcServer) {
+  /**
+   * @param {RpcClient} rpcClient
+   * @param {RpcServer} rpcServer
+   */
+  constructor({ rpcClient, rpcServer }) {
     this.rpcClient = rpcClient;
     this.rpcServer = rpcServer;
   }
@@ -10,39 +14,43 @@ class IpcFacade {
     return this.rpcClient.call(functionId, ...args);
   }
 
-  provide(functionId, handler) {
-    return this.rpcServer.provide(functionId, handler);
-  }
-
-  provideApi(apiInstance) {
+  provide(apiName, apiInstance = null) {
     const methods = getObjectMethods(apiInstance);
     methods.forEach(([name, method]) => {
-      this.provide(name, method.bind(apiInstance));
+      this.provideFunction(`${apiName}.${name}`, method.bind(apiInstance));
     });
   }
 
-  createClient() {
-    const rpcClient = this.rpcClient;
+  provideFunction(functionName, handler) {
+    return this.rpcServer.provide(functionName, handler);
+  }
 
+  use(apiName) {
     return new Proxy(
       {},
       {
-        get(target, name) {
-          return (...args) => rpcClient.call(name, ...args);
-        },
+        get: (target, name) => this.useFunction(`${apiName}.${name}`),
       }
     );
+  }
+
+  useFunction(functionName) {
+    return (...args) => this.rpcClient.call(functionName, ...args);
   }
 }
 
 module.exports = IpcFacade;
 
 function getObjectMethods(object) {
-  const prototype = object
+  let prototype = object
     && object.constructor
     && object.constructor.prototype;
   if (!prototype) {
     return [];
+  }
+
+  if (object && object.constructor === Object) {
+    prototype = object;
   }
 
   const descriptors = Object.getOwnPropertyDescriptors(prototype);
