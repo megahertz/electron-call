@@ -14,7 +14,7 @@ function createFacade() {
   const rpcClient = new RpcClient({ ipcBus });
   const rpcServer = new RpcServer({ ipcBus, logger });
 
-  return new IpcFacade({ rpcClient, rpcServer });
+  return new IpcFacade({ logger, rpcClient, rpcServer });
 }
 
 module.exports = createFacade();

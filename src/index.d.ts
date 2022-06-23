@@ -9,6 +9,9 @@ declare namespace ElectronCall {
   }
 
   interface Logger {
+    level: 0 | 1 | 2 | 3;
+    target: any;
+
     debug(...args: any[]);
     error(...args: any[]);
     info(...args: any[]);
