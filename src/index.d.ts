@@ -1,7 +1,9 @@
 declare namespace ElectronCall {
   interface IpcFacade {
     logger: Logger;
-    provide(apiName: string, apiInstance: object);
+    provide(apiName: string, apiInstance: object, options?: {
+      maxLevel?: number;
+    });
     provideFunction(functionName: string, fn: Func);
     use<T = any>(apiName: string): ApiProxy<T>;
     useClass<T = any>(apiName: string): { new(): ApiProxy<T> };
@@ -9,13 +11,13 @@ declare namespace ElectronCall {
   }
 
   interface Logger {
-    level: 0 | 1 | 2 | 3;
+    level: 'error' | 'warn' | 'info' | 'debug';
     target: any;
 
-    debug(...args: any[]);
     error(...args: any[]);
-    info(...args: any[]);
     warn(...args: any[]);
+    info(...args: any[]);
+    debug(...args: any[]);
   }
 
   export type ApiProxy<T> = {

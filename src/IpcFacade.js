@@ -23,8 +23,8 @@ class IpcFacade {
     return this.rpcClient.call(functionId, ...args);
   }
 
-  provide(apiName, apiInstance = null) {
-    const methods = getObjectMethods(apiInstance);
+  provide(apiName, apiInstance = null, options) {
+    const methods = getObjectMethods(apiInstance, options);
     methods.forEach(([name, method]) => {
       this.provideFunction(`${apiName}.${name}`, method.bind(apiInstance));
     });
@@ -60,21 +60,46 @@ class IpcFacade {
 
 module.exports = IpcFacade;
 
-function getObjectMethods(object) {
-  let prototype = object
-    && object.constructor
-    && object.constructor.prototype;
-  if (!prototype) {
+function getObjectMethods(
+  object,
+  {
+    calledRecursive = false,
+    maxLevel = 5,
+  } = {}
+) {
+  if (!object || typeof object !== 'object') {
     return [];
   }
 
-  if (object && object.constructor === Object) {
-    prototype = object;
-  }
-
-  const descriptors = Object.getOwnPropertyDescriptors(prototype);
-
-  return Object.entries(descriptors)
+  const descriptors = Object.getOwnPropertyDescriptors(object);
+  const methods = Object.entries(descriptors)
     .map(([name, desc]) => [name, desc.value])
     .filter(([_, func]) => typeof func === 'function');
+
+  const parent = Object.getPrototypeOf(object);
+  if (parent && maxLevel > 0 && parent.constructor !== Object) {
+    methods.push(
+      ...getObjectMethods(parent, {
+        calledRecursive: true,
+        maxLevel: maxLevel - 1,
+      })
+    );
+  }
+
+  if (!calledRecursive) {
+    const filtered = [];
+    const methodNames = new Set();
+    for (const method of methods) {
+      if (methodNames.has(method[0])) {
+        continue;
+      }
+
+      filtered.push(method);
+      methodNames.add(method[0]);
+    }
+
+    return filtered;
+  }
+
+  return methods;
 }
