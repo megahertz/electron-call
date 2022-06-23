@@ -50,7 +50,9 @@ class IpcFacade {
   }
 
   useFunction(functionName) {
-    return (...args) => this.rpcClient.call(functionName, ...args);
+    const proxyFn = (...args) => this.rpcClient.call(functionName, ...args);
+    Object.defineProperty(proxyFn, 'name', { value: functionName });
+    return proxyFn;
   }
 }
 
