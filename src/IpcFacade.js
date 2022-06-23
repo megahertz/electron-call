@@ -2,10 +2,12 @@
 
 class IpcFacade {
   /**
+   * @param {Logger} logger
    * @param {RpcClient} rpcClient
    * @param {RpcServer} rpcServer
    */
-  constructor({ rpcClient, rpcServer }) {
+  constructor({ logger, rpcClient, rpcServer }) {
+    this.logger = logger;
     this.rpcClient = rpcClient;
     this.rpcServer = rpcServer;
 

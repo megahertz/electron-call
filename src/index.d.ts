@@ -1,10 +1,18 @@
 declare namespace ElectronCall {
   interface IpcFacade {
+    logger: Logger;
     provide(apiName: string, apiInstance: object);
     provideFunction(functionName: string, fn: Func);
     use<T = any>(apiName: string): ApiProxy<T>;
     useClass<T = any>(apiName: string): { new(): ApiProxy<T> };
     useFunction<T extends Func = Func>(apiName: string): PromisifyFunction<T>;
+  }
+
+  interface Logger {
+    debug(...args: any[]);
+    error(...args: any[]);
+    info(...args: any[]);
+    warn(...args: any[]);
   }
 
   export type ApiProxy<T> = {
