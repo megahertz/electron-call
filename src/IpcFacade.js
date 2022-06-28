@@ -11,6 +11,8 @@ class IpcFacade {
     this.rpcClient = rpcClient;
     this.rpcServer = rpcServer;
 
+    this.functionCache = new Map();
+
     this.call = this.call.bind(this);
     this.provide = this.provide.bind(this);
     this.provideFunction = this.provideFunction.bind(this);
@@ -52,8 +54,15 @@ class IpcFacade {
   }
 
   useFunction(functionName) {
+    if (this.functionCache[functionName]) {
+      return this.functionCache[functionName];
+    }
+
     const proxyFn = (...args) => this.rpcClient.call(functionName, ...args);
     Object.defineProperty(proxyFn, 'name', { value: functionName });
+
+    this.functionCache[functionName] = proxyFn;
+
     return proxyFn;
   }
 }
