@@ -27,7 +27,7 @@ export class MainApi {
   }
 }
 
-call.provide('MainApi', MainApi);
+call.provide('MainApi', new MainApi());
 ```
 
 ```typescript
@@ -47,7 +47,7 @@ Install with [npm](https://npmjs.org/package/electron-call):
 
 ## Usage
 
-### Provide API
+### Providing API
 
 There are 3 ways of defining API:
 
@@ -95,7 +95,7 @@ call.provideFunction('selectDirectory', async (defaultPath) => {
 });
 ```
 
-### Use API
+### Consuming API
 
 #### Using a class/object
 
@@ -106,9 +106,14 @@ const fsApi = call.use<FsApi>('FsApi')
 console.log(await fsApi.selectDirectory(defaultPath));
 ```
 
+Also, you can get a remote class constructor instead of an instance
+
+const FsApiProxy = call.use<FsApi>('FsApi')
+console.log(await new FsApiProxy().selectDirectory(defaultPath));
+
 #### Using a function
 
 ```js
-const selectDirectory = call.use('selectDirectory')
+const selectDirectory = call.useFunction('selectDirectory')
 console.log(await selectDirectory(defaultPath));
 ```
