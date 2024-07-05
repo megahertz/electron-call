@@ -1,9 +1,13 @@
 {
   "compilerOptions": {
+    "esModuleInterop": true,
     "lib": ["esnext"],
-    "noImplicitReturns": true
+    "module": "CommonJS",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": true
   },
   "include": [
-    "./src/__specs__/index.d.test.ts"
+    "./src/**/*.ts"
   ]
 }

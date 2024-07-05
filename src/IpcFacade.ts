@@ -1,17 +1,31 @@
-'use strict';
+import type Logger from './Logger';
+import type RpcClient from './rpc/RpcClient';
+import type RpcServer from './rpc/RpcServer';
+import { UnknownFn } from './utils/types';
 
-class IpcFacade {
-  /**
-   * @param {Logger} logger
-   * @param {RpcClient} rpcClient
-   * @param {RpcServer} rpcServer
-   */
-  constructor({ logger, rpcClient, rpcServer }) {
+export default class IpcFacade {
+  private readonly logger: Logger;
+  private readonly rpcClient: RpcClient;
+  private readonly rpcServer: RpcServer;
+  private readonly functionCache: Record<
+    string,
+    (...args: unknown[]) => unknown
+  >;
+
+  constructor({
+    logger,
+    rpcClient,
+    rpcServer,
+  }: {
+    logger: Logger;
+    rpcClient: RpcClient;
+    rpcServer: RpcServer;
+  }) {
     this.logger = logger;
     this.rpcClient = rpcClient;
     this.rpcServer = rpcServer;
 
-    this.functionCache = new Map();
+    this.functionCache = {};
 
     this.call = this.call.bind(this);
     this.provide = this.provide.bind(this);
@@ -21,44 +35,50 @@ class IpcFacade {
     this.useFunction = this.useFunction.bind(this);
   }
 
-  async call(functionId, ...args) {
+  async call(functionId: string, ...args: unknown[]) {
     return this.rpcClient.call(functionId, ...args);
   }
 
-  provide(apiName, apiInstance = null, options) {
+  provide(
+    apiName: string,
+    apiInstance: object,
+    options: { calledRecursive?: boolean; maxLevel?: number },
+  ) {
     const methods = getObjectMethods(apiInstance, options);
     methods.forEach(([name, method]) => {
       this.provideFunction(`${apiName}.${name}`, method.bind(apiInstance));
     });
   }
 
-  provideFunction(functionName, handler) {
+  provideFunction(functionName: string, handler: UnknownFn) {
     return this.rpcServer.provide(functionName, handler);
   }
 
-  use(apiName) {
+  use(apiName: string) {
     return new Proxy(
       {},
       {
-        get: (target, name) => this.useFunction(`${apiName}.${name}`),
-      }
+        get: (_target, name) =>
+          this.useFunction(`${apiName}.${name.toString()}`),
+      },
     );
   }
 
-  useClass(apiName) {
-    const use = this.use;
+  useClass(apiName: string) {
+    const { use } = this;
 
     return function ProxyConstructor() {
       return use(apiName);
     };
   }
 
-  useFunction(functionName) {
+  useFunction(functionName: string) {
     if (this.functionCache[functionName]) {
       return this.functionCache[functionName];
     }
 
-    const proxyFn = (...args) => this.rpcClient.call(functionName, ...args);
+    const proxyFn = (...args: unknown[]) =>
+      this.rpcClient.call(functionName, ...args);
     Object.defineProperty(proxyFn, 'name', { value: functionName });
 
     this.functionCache[functionName] = proxyFn;
@@ -67,14 +87,9 @@ class IpcFacade {
   }
 }
 
-module.exports = IpcFacade;
-
 function getObjectMethods(
-  object,
-  {
-    calledRecursive = false,
-    maxLevel = 5,
-  } = {}
+  object: object,
+  { calledRecursive = false, maxLevel = 5 } = {},
 ) {
   if (!object || typeof object !== 'object') {
     return [];
@@ -91,7 +106,7 @@ function getObjectMethods(
       ...getObjectMethods(parent, {
         calledRecursive: true,
         maxLevel: maxLevel - 1,
-      })
+      }),
     );
   }
 

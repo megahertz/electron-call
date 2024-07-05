@@ -4,7 +4,7 @@
   "description": "The easiest main-renderer IPC communication",
   "main": "src/index.js",
   "scripts": {
-    "lint": "eslint 'src/**/*.js'",
+    "lint": "eslint 'src/**/*.ts'",
     "test": "humile src",
     "test:e2e": "humile e2e -R list",
     "test:full": "npm test && npm run lint && tsc --noEmit --skipLibCheck && npm run test:e2e",
@@ -28,16 +28,22 @@
   "bugs": "https://github.com/megahertz/electron-call/issues",
   "homepage": "https://github.com/megahertz/electron-call#readme",
   "engines": {
-    "node": ">=14.0"
+    "node": ">=16.0"
   },
   "typings": "src/index.d.ts",
   "devDependencies": {
-    "@types/node": "^16.10.2",
+    "@types/node": "^16.18.101",
+    "@typescript-eslint/eslint-plugin": "^7.15.0",
     "electron": "^15.1.2",
-    "eslint": "^7.32.0",
-    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-unicorn": "^54.0.0",
     "humile": "^0.3.2",
+    "prettier": "^3.3.2",
     "typescript": "^4.4.3"
   }
 }

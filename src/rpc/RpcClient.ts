@@ -1,17 +1,16 @@
-'use strict';
+import IpcBus from '../IpcBus';
+import { deserializeError } from './error';
 
-const { deserializeError } = require('./error');
+export default class RpcClient {
+  private readonly ipcBus: IpcBus;
+  private callCounter: number;
 
-class RpcClient {
-  /**
-   * @param {IpcBus} ipcBus
-   */
-  constructor({ ipcBus }) {
+  constructor({ ipcBus }: { ipcBus: IpcBus }) {
     this.ipcBus = ipcBus;
     this.callCounter = 1;
   }
 
-  async call(functionName, ...args) {
+  async call(functionName: string, ...args: unknown[]) {
     const requestId = `rpc-request-${functionName}`;
     const callId = this.makeCallId();
     const responseId = `rpc-response-${functionName}-${callId}`;
@@ -36,5 +35,3 @@ class RpcClient {
     return this.callCounter;
   }
 }
-
-module.exports = RpcClient;
