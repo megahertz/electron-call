@@ -1,12 +1,12 @@
-import IpcBus from '../IpcBus';
+import RpcBus from './RpcBus';
 import { deserializeError } from './error';
 
 export default class RpcClient {
-  private readonly ipcBus: IpcBus;
+  private readonly rpcBus: RpcBus;
   private callCounter: number;
 
-  constructor({ ipcBus }: { ipcBus: IpcBus }) {
-    this.ipcBus = ipcBus;
+  constructor({ rpcBus }: { rpcBus: RpcBus }) {
+    this.rpcBus = rpcBus;
     this.callCounter = 1;
   }
 
@@ -16,17 +16,17 @@ export default class RpcClient {
     const responseId = `rpc-response-${functionName}-${callId}`;
 
     return new Promise((resolve, reject) => {
-      this.ipcBus.registerMessageHandler(responseId, (message) => {
+      this.rpcBus.registerMessageHandler(responseId, (message) => {
         if (message.error) {
           reject(deserializeError(message.error));
         } else {
           resolve(message.result);
         }
 
-        this.ipcBus.unregisterMessageHandler(responseId);
+        this.rpcBus.unregisterMessageHandler(responseId);
       });
 
-      this.ipcBus.send({ id: requestId, callId, arguments: args });
+      this.rpcBus.send({ id: requestId, callId, arguments: args });
     });
   }
 

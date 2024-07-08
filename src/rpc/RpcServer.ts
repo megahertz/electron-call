@@ -1,22 +1,22 @@
-import IpcBus from '../IpcBus';
-import Logger from '../Logger';
+import RpcBus from './RpcBus';
+import Logger from '../utils/Logger';
 import { has } from '../utils/object';
 import { UnknownFn } from '../utils/types';
 import { serializeError } from './error';
 
 export default class RpcServer {
-  private readonly ipcBus: IpcBus;
+  private readonly rpcBus: RpcBus;
   private readonly logger: Logger;
 
-  constructor({ ipcBus, logger }: { ipcBus: IpcBus; logger: Logger }) {
-    this.ipcBus = ipcBus;
+  constructor({ rpcBus, logger }: { rpcBus: RpcBus; logger: Logger }) {
+    this.rpcBus = rpcBus;
     this.logger = logger;
   }
 
   provide(functionName: string, handler: UnknownFn) {
     const requestId = `rpc-request-${functionName}`;
 
-    this.ipcBus.registerMessageHandler(requestId, (message) => {
+    this.rpcBus.registerMessageHandler(requestId, (message) => {
       const { callId } = message;
       if (!callId) {
         this.logger.warn(`${requestId} called, but callId isn't provided`);
@@ -53,10 +53,10 @@ export default class RpcServer {
   }
 
   sendResponse(responseId: string, result: unknown) {
-    this.ipcBus.send({ id: responseId, result });
+    this.rpcBus.send({ id: responseId, result });
   }
 
   sendErrorResponse(responseId: string, error: unknown) {
-    this.ipcBus.send({ id: responseId, error: serializeError(error) });
+    this.rpcBus.send({ id: responseId, error: serializeError(error) });
   }
 }

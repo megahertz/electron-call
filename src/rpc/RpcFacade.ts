@@ -1,9 +1,9 @@
-import type Logger from './Logger';
-import type RpcClient from './rpc/RpcClient';
-import type RpcServer from './rpc/RpcServer';
-import { UnknownFn } from './utils/types';
+import type Logger from '../utils/Logger';
+import type RpcClient from './RpcClient';
+import type RpcServer from './RpcServer';
+import { UnknownFn } from '../utils/types';
 
-export default class IpcFacade {
+export default class RpcFacade {
   private readonly logger: Logger;
   private readonly rpcClient: RpcClient;
   private readonly rpcServer: RpcServer;

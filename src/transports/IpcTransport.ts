@@ -1,5 +1,5 @@
 import electron, { IpcMain, IpcRenderer } from 'electron';
-import Logger from '../Logger';
+import Logger from '../utils/Logger';
 import { has } from '../utils/object';
 import type Transport from './Transport';
 

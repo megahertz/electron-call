@@ -1,6 +1,6 @@
-import type IpcTransport from './transports/IpcTransport';
+import type IpcTransport from '../transports/IpcTransport';
 
-export default class IpcBus {
+export default class RpcBus {
   private transport: IpcTransport;
   private readonly handlers: Record<string | number, MessageHandler>;
 
