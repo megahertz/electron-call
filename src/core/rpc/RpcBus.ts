@@ -1,10 +1,10 @@
-import type IpcTransport from '../transports/IpcTransport';
+import type { OnMessageCallback, RpcMessage, Transport } from '../types';
 
 export default class RpcBus {
-  private transport: IpcTransport;
-  private readonly handlers: Record<string | number, MessageHandler>;
+  private transport: Transport;
+  private readonly handlers: Record<string | number, OnMessageCallback>;
 
-  constructor({ transport }: { transport: IpcTransport }) {
+  constructor({ transport }: { transport: Transport }) {
     this.transport = transport;
     this.handlers = {};
 
@@ -13,16 +13,19 @@ export default class RpcBus {
     this.setTransport(transport);
   }
 
-  setTransport(transport: IpcTransport) {
+  setTransport(transport: Transport) {
     this.transport = transport;
     this.transport.onMessage(this.onMessage);
   }
 
-  send(message: object) {
+  send(message: RpcMessage) {
     this.transport.send(message);
   }
 
-  registerMessageHandler(messageId: string | number, handler: MessageHandler) {
+  registerMessageHandler(
+    messageId: string | number,
+    handler: OnMessageCallback,
+  ) {
     this.handlers[messageId] = handler;
   }
 
@@ -30,7 +33,7 @@ export default class RpcBus {
     delete this.handlers[messageId];
   }
 
-  onMessage(message: IpcMessage) {
+  onMessage(message: RpcMessage) {
     if (!message || !message.id) {
       return;
     }
@@ -40,14 +43,4 @@ export default class RpcBus {
       handler(message);
     }
   }
-}
-
-export type MessageHandler = (message: IpcMessage) => void;
-
-export interface IpcMessage {
-  arguments: any;
-  callId: any;
-  error?: any;
-  id: any;
-  result?: any;
 }

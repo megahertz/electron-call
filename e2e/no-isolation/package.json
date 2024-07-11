@@ -1,5 +1,5 @@
 {
-  "name": "electron-call-test-simple",
+  "name": "electron-call-test-no-isolation",
   "version": "1.0.0",
   "private": true,
   "main": "main.js",

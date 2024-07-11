@@ -1,14 +1,14 @@
-import RpcBus from './RpcBus';
-import Logger from '../utils/Logger';
+import type RpcBus from './RpcBus';
+import type { LoggerFunctions } from '../Logger';
 import { has } from '../utils/object';
-import { UnknownFn } from '../utils/types';
+import type { UnknownFn } from '../types';
 import { serializeError } from './error';
 
 export default class RpcServer {
   private readonly rpcBus: RpcBus;
-  private readonly logger: Logger;
+  private readonly logger: LoggerFunctions;
 
-  constructor({ rpcBus, logger }: { rpcBus: RpcBus; logger: Logger }) {
+  constructor({ rpcBus, logger }: { rpcBus: RpcBus; logger: LoggerFunctions }) {
     this.rpcBus = rpcBus;
     this.logger = logger;
   }

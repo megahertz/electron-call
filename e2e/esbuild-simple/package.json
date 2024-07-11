@@ -1,0 +1,17 @@
+{
+  "name": "electron-call-test-esbuild-simple",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "npm run build:main && npm run build:renderer",
+    "build:all": "npm run build --prefix ../.. && npm run build",
+    "build:main": "../../node_modules/.bin/esbuild src/main.ts --bundle --platform=node --external:electron --outfile=dist/main.js",
+    "build:renderer": "../../node_modules/.bin/esbuild src/renderer.ts --bundle --outfile=dist/renderer.js",
+    "start": "../../node_modules/.bin/electron dist/main.js",
+    "test": "../../node_modules/.bin/vitest run"
+  },
+  "devDependencies": {
+    "electron": "*"
+  }
+}

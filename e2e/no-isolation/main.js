@@ -1,5 +1,3 @@
-// noinspection DuplicatedCode
-
 'use strict';
 
 const { app, BrowserWindow } = require('electron');
@@ -22,12 +20,12 @@ call.provide('MainApi', {
     }
   },
 
-  async makeCall(from) {
+  makeCall(from) {
     testOutput(`MainApi.makeCall("from ${from}")`);
     return `${from}->main`;
   },
 
-  async log(text) {
+  log(text) {
     testOutput(text);
   },
 });
@@ -37,12 +35,16 @@ function testOutput(text = '') {
 }
 
 function main() {
-  call.initialize();
   app.on('ready', createWindow).on('window-all-closed', () => app.quit());
 }
 
 function createWindow() {
-  const win = new BrowserWindow({ height: 600, show: !isTest, width: 800 });
+  const win = new BrowserWindow({
+    height: 600,
+    show: !isTest,
+    webPreferences: { contextIsolation: false, nodeIntegration: true },
+    width: 800,
+  });
 
   return win.loadURL('file://' + path.join(__dirname, 'index.html'));
 }

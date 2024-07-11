@@ -1,20 +1,22 @@
 # electron-call
+
 [![Tests](https://github.com/megahertz/electron-call/workflows/Tests/badge.svg)](https://github.com/megahertz/electron-call/actions?query=workflow%3ATests)
 [![npm version](https://img.shields.io/npm/v/electron-call?color=brightgreen)](https://www.npmjs.com/package/electron-call)
 [![Dependencies status](https://img.shields.io/david/megahertz/electron-call)](https://david-dm.org/megahertz/electron-call)
 
 The easiest main-renderer IPC communication. Now calling a method/function in a
-remote process looks the sames as calling a local. Supports both main → renderer
-and renderer → main calls. Renderer → renderer is on the roadmap.
+renderer process looks the same as calling a local one. It supports both main →
+renderer and renderer → main calls.
 
-Warning: API could be changes frequently until v0.1.0 release.
+Warning: API could be changed frequently until v0.2.0 release.
 
 ### Key features
 
- - Very simple API
- - Typescript friendly
- - Lightweight and fast
- - No dependencies
+- Very simple API
+- Typescript friendly
+- Lightweight and fast
+- No dependencies
+- Supports context isolation mode
 
 ```typescript
 // MainApi.ts
@@ -27,6 +29,7 @@ export class MainApi {
   }
 }
 
+call.initialize();
 call.provide('MainApi', new MainApi());
 ```
 
@@ -35,7 +38,7 @@ call.provide('MainApi', new MainApi());
 import call from 'electron-call';
 import type { MainApi } from '../main/MainApi';
 
-const mainApi = call.use<MainApi>('MainApi')
+const mainApi = call.use<MainApi>('MainApi');
 console.log(await mainApi.getAppName());
 ```
 
@@ -46,6 +49,18 @@ Install with [npm](https://npmjs.org/package/electron-call):
     npm install electron-call
 
 ## Usage
+
+### Initialization
+
+First of all, electron-call should be able to communicate between main and
+renderer processes:
+
+`call.initialize()`
+
+Under the hood `call.initialize()` attempts to inject a preload script via
+`session.setPreloads()`. By default, it only does this for the `defaultSession`.
+
+Alternatively, you can import `electron-call` in your preload script.
 
 ### Providing API
 
@@ -102,18 +117,18 @@ call.provideFunction('selectDirectory', async (defaultPath) => {
 You can omit using FsApi generic if you don't need type support
 
 ```typescript
-const fsApi = call.use<FsApi>('FsApi')
+const fsApi = call.use<FsApi>('FsApi');
 console.log(await fsApi.selectDirectory(defaultPath));
 ```
 
 Also, you can get a remote class constructor instead of an instance
 
-const FsApiProxy = call.use<FsApi>('FsApi')
-console.log(await new FsApiProxy().selectDirectory(defaultPath));
+const FsApiProxy = call.use<FsApi>('FsApi') console.log(await new
+FsApiProxy().selectDirectory(defaultPath));
 
 #### Using a function
 
 ```js
-const selectDirectory = call.useFunction('selectDirectory')
+const selectDirectory = call.useFunction('selectDirectory');
 console.log(await selectDirectory(defaultPath));
 ```

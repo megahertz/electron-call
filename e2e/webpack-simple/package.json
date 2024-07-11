@@ -1,9 +1,11 @@
 {
-  "name": "electron-call-test-simple",
+  "name": "electron-call-test-webpack-simple",
   "version": "1.0.0",
   "private": true,
-  "main": "main.js",
+  "main": "dist/main.js",
   "scripts": {
+    "build": "../../node_modules/.bin/webpack",
+    "build:all": "npm run build --prefix ../.. && npm run build",
     "start": "../../node_modules/.bin/electron .",
     "test": "../../node_modules/.bin/vitest run"
   },

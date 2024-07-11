@@ -1,19 +1,21 @@
-import RpcBus from './rpc/RpcBus';
-import RpcFacade from './rpc/RpcFacade';
-import Logger from './utils/Logger';
-import RpcClient from './rpc/RpcClient';
-import RpcServer from './rpc/RpcServer';
-import IpcTransport from './transports/IpcTransport';
+import type RpcFacade from './core/rpc/RpcFacade';
+import { safeRequire } from './core/utils/node';
+import { createMainFacade } from './main';
+import { createPreloadFacade } from './preload';
+import { createRendererFacade } from './renderer';
 
-export function create() {
-  const logger = new Logger({ target: console });
-  const transport = new IpcTransport({ logger });
+const electron = safeRequire('electron');
 
-  const rpcBus = new RpcBus({ transport });
-  const rpcClient = new RpcClient({ rpcBus });
-  const rpcServer = new RpcServer({ rpcBus, logger });
+export function create(): RpcFacade {
+  if (electron?.ipcMain) {
+    return createMainFacade();
+  }
 
-  return new RpcFacade({ logger, rpcClient, rpcServer });
+  if (electron?.ipcRenderer) {
+    return createPreloadFacade();
+  }
+
+  return createRendererFacade();
 }
 
 export default create();

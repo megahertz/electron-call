@@ -10,14 +10,10 @@
   </head>
   <body>
     <script>
-      /** @type {import('./main').MainApi} */
-      const mainApi = {
-        makeCall: __electronCall.useFunction('MainApi.makeCall'),
-        log: __electronCall.useFunction('MainApi.log'),
-        startTests: __electronCall.useFunction('MainApi.startTests'),
-      };
+      const call = require('../../dist');
+      const mainApi = call.use('MainApi');
 
-      const RendererApi = {
+      call.provide('RendererApi', {
         async startTests() {
           const mainResult = await mainApi.makeCall('renderer');
           await mainApi.log(`  result: "${mainResult}"`);
@@ -27,9 +23,7 @@
           await mainApi.log(`RendererApi.makeCall("from ${from}")`);
           return `${from}->renderer`;
         },
-      };
-
-      __electronCall.provide('RendererApi', RendererApi);
+      });
 
       mainApi.startTests().catch(console.error);
     </script>

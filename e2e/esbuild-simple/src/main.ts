@@ -1,15 +1,12 @@
-// noinspection DuplicatedCode
-
-'use strict';
-
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
-const call = require('../../dist');
+import { app, BrowserWindow } from 'electron';
+import path from 'node:path';
+import call from '../../../dist';
+import type { RendererApi } from './renderer';
 
 const isTest = process.argv.includes('--test');
-const rendererApi = call.use('RendererApi');
+const rendererApi = call.use<typeof RendererApi>('RendererApi');
 
-call.provide('MainApi', {
+export const MainApi = {
   async startTests() {
     await rendererApi.startTests();
     testOutput();
@@ -22,29 +19,34 @@ call.provide('MainApi', {
     }
   },
 
-  async makeCall(from) {
+  makeCall(from: string) {
     testOutput(`MainApi.makeCall("from ${from}")`);
     return `${from}->main`;
   },
 
-  async log(text) {
+  log(text: string) {
     testOutput(text);
   },
-});
+};
 
-function testOutput(text = '') {
+function testOutput(text: string = '') {
   console.info(`${isTest ? ' - ' : ''}${text}`);
 }
 
 function main() {
   call.initialize();
+  call.provide('MainApi', MainApi);
   app.on('ready', createWindow).on('window-all-closed', () => app.quit());
 }
 
 function createWindow() {
-  const win = new BrowserWindow({ height: 600, show: !isTest, width: 800 });
+  const win = new BrowserWindow({
+    height: 600,
+    show: !isTest,
+    width: 800,
+  });
 
-  return win.loadURL('file://' + path.join(__dirname, 'index.html'));
+  return win.loadURL(`file://${path.join(__dirname, '../index.html')}`);
 }
 
 main();

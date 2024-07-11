@@ -1,4 +1,4 @@
-import Transport, { OnMessageCallback } from './Transport';
+import type { OnMessageCallback, RpcMessage, Transport } from './types';
 
 export default class TestTransport implements Transport {
   private callback: OnMessageCallback | undefined;
@@ -11,7 +11,7 @@ export default class TestTransport implements Transport {
     this.callback = callback;
   }
 
-  send(message: object) {
+  send(message: RpcMessage) {
     this.callback?.(message);
   }
 }

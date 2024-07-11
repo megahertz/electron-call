@@ -1,10 +1,16 @@
-import type Logger from '../utils/Logger';
+import type { Session } from 'electron';
+import type { LoggerFunctions } from '../Logger';
 import type RpcClient from './RpcClient';
 import type RpcServer from './RpcServer';
-import { UnknownFn } from '../utils/types';
+import type {
+  ApiProxy,
+  ApiProxyClass,
+  PromisifyFunction,
+  UnknownFn,
+} from '../types';
 
 export default class RpcFacade {
-  private readonly logger: Logger;
+  private readonly logger: LoggerFunctions;
   private readonly rpcClient: RpcClient;
   private readonly rpcServer: RpcServer;
   private readonly functionCache: Record<
@@ -17,7 +23,7 @@ export default class RpcFacade {
     rpcClient,
     rpcServer,
   }: {
-    logger: Logger;
+    logger: LoggerFunctions;
     rpcClient: RpcClient;
     rpcServer: RpcServer;
   }) {
@@ -39,10 +45,15 @@ export default class RpcFacade {
     return this.rpcClient.call(functionId, ...args);
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  initialize(_options?: InitializeOptions) {
+    throw new Error('initialize() call allowed in the main process only');
+  }
+
   provide(
     apiName: string,
     apiInstance: object,
-    options: { calledRecursive?: boolean; maxLevel?: number },
+    options: { calledRecursive?: boolean; maxLevel?: number } = {},
   ) {
     const methods = getObjectMethods(apiInstance, options);
     methods.forEach(([name, method]) => {
@@ -54,27 +65,31 @@ export default class RpcFacade {
     return this.rpcServer.provide(functionName, handler);
   }
 
-  use(apiName: string) {
+  use<T = any>(apiName: string): ApiProxy<T> {
     return new Proxy(
       {},
       {
         get: (_target, name) =>
           this.useFunction(`${apiName}.${name.toString()}`),
       },
-    );
+    ) as ApiProxy<T>;
   }
 
-  useClass(apiName: string) {
+  useClass<T = any>(apiName: string): ApiProxyClass<T> {
     const { use } = this;
 
     return function ProxyConstructor() {
       return use(apiName);
-    };
+    } as unknown as ApiProxyClass<T>;
   }
 
-  useFunction(functionName: string) {
+  useFunction<T extends UnknownFn = UnknownFn>(
+    functionName: string,
+  ): PromisifyFunction<T> {
     if (this.functionCache[functionName]) {
-      return this.functionCache[functionName];
+      return this.functionCache[
+        functionName
+      ] as unknown as PromisifyFunction<T>;
     }
 
     const proxyFn = (...args: unknown[]) =>
@@ -83,7 +98,7 @@ export default class RpcFacade {
 
     this.functionCache[functionName] = proxyFn;
 
-    return proxyFn;
+    return proxyFn as unknown as PromisifyFunction<T>;
   }
 }
 
@@ -126,4 +141,9 @@ function getObjectMethods(
   }
 
   return methods;
+}
+
+export interface InitializeOptions {
+  getSessions?: () => Array<Session | undefined>;
+  includeFutureSessions?: boolean;
 }

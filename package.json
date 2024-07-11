@@ -2,20 +2,21 @@
   "name": "electron-call",
   "version": "0.0.7",
   "description": "The easiest main-renderer IPC communication",
-  "main": "src/index.js",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "scripts": {
-    "lint": "eslint 'src/**/*.ts'",
-    "test": "humile src",
-    "test:e2e": "humile e2e -R list",
-    "test:full": "npm test && npm run lint && tsc --noEmit --skipLibCheck && npm run test:e2e",
+    "build": "node build.mjs",
+    "lint": "eslint . && prettier . --check",
+    "test": "vitest run src",
+    "test:e2e": "npm run build && vitest run e2e --disable-console-intercept --reporter=basic",
+    "test:full": "npm test && npm run lint && tsc --noEmit  && npm run test:e2e",
     "postversion": "git push && git push --tags",
-    "prepack": "npm run test:full",
+    "prepack": "npm run build && npm run test:full",
     "preversion": "npm run test:full"
   },
   "repository": "megahertz/electron-call",
   "files": [
-    "src/*",
-    "!__specs__"
+    "dist/*"
   ],
   "keywords": [
     "electron",
@@ -30,11 +31,12 @@
   "engines": {
     "node": ">=16.0"
   },
-  "typings": "src/index.d.ts",
   "devDependencies": {
-    "@types/node": "^16.18.101",
+    "@types/node": "^18.19.39",
     "@typescript-eslint/eslint-plugin": "^7.15.0",
-    "electron": "^15.1.2",
+    "dts-bundle-generator": "^9.5.1",
+    "electron": "^31.1.0",
+    "esbuild": "^0.23.0",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
@@ -44,6 +46,9 @@
     "eslint-plugin-unicorn": "^54.0.0",
     "humile": "^0.3.2",
     "prettier": "^3.3.2",
-    "typescript": "^4.4.3"
+    "typescript": "^5.5.3",
+    "vitest": "^2.0.2",
+    "webpack": "^5.92.1",
+    "webpack-cli": "^5.1.4"
   }
 }

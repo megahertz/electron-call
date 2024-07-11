@@ -3,8 +3,7 @@
     "esModuleInterop": true,
     "lib": ["dom", "esnext"],
     "module": "CommonJS",
-    "noEmit": true,
-    "outDir": "./dist",
+    "noEmit": false,
     "skipLibCheck": true,
     "strict": true
   },

@@ -1,15 +1,12 @@
-// noinspection DuplicatedCode
+import { app, BrowserWindow } from 'electron';
+import path from 'node:path';
+import call from '../../../dist/index.js';
 
-'use strict';
-
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
-const call = require('../../dist');
-
-const isTest = process.argv.includes('--test');
+/** @type {typeof import('./renderer.mjs').RendererApi} */
 const rendererApi = call.use('RendererApi');
+const isTest = process.argv.includes('--test');
 
-call.provide('MainApi', {
+const MainApi = {
   async startTests() {
     await rendererApi.startTests();
     testOutput();
@@ -22,19 +19,21 @@ call.provide('MainApi', {
     }
   },
 
-  async makeCall(from) {
+  makeCall(from) {
     testOutput(`MainApi.makeCall("from ${from}")`);
     return `${from}->main`;
   },
 
-  async log(text) {
+  log(text) {
     testOutput(text);
   },
-});
+};
 
 function testOutput(text = '') {
   console.info(`${isTest ? ' - ' : ''}${text}`);
 }
+
+call.provide('MainApi', MainApi);
 
 function main() {
   call.initialize();
@@ -44,7 +43,7 @@ function main() {
 function createWindow() {
   const win = new BrowserWindow({ height: 600, show: !isTest, width: 800 });
 
-  return win.loadURL('file://' + path.join(__dirname, 'index.html'));
+  return win.loadURL('file://' + path.join(__dirname, '../index.html'));
 }
 
 main();
