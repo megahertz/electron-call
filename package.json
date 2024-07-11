@@ -1,6 +1,6 @@
 {
   "name": "electron-call",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "description": "The easiest main-renderer IPC communication",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
