@@ -8,8 +8,8 @@
     "build": "node build.mjs",
     "lint": "eslint . && prettier . --check",
     "test": "vitest run src",
-    "test:e2e": "npm run build && vitest run e2e --disable-console-intercept --reporter=basic",
-    "test:full": "npm test && npm run lint && tsc --noEmit  && npm run test:e2e",
+    "test:e2e": "vitest run e2e --disable-console-intercept --reporter=basic",
+    "test:full": "npm run build && npm test && npm run lint && tsc --noEmit && npm run test:e2e",
     "postversion": "git push && git push --tags",
     "prepack": "npm run build && npm run test:full",
     "preversion": "npm run test:full"
